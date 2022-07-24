@@ -1,7 +1,7 @@
 import {LightningElement, track, api} from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
-
-// import VACATION_OBJECT from '@salesforce/schema/Vacation_request__c';
+import getRequestList from '@salesforce/apex/vacationComponentController.getRequestList';
+// import VACATION_OBJECT from '@salesforce/schema/Vacation_request__c
 
 import REQUEST_TYPE_FIELD from '@salesforce/schema/Vacation_request__c.Request_Type__c';
 import START_DATE_FIELD from '@salesforce/schema/Vacation_request__c.Start_Date__c';
@@ -14,6 +14,7 @@ import MANAGER_FIELD from '@salesforce/schema/Vacation_request__c.Manager__c';
 export default class VacationComponent extends LightningElement {
 
     @track isShowAddWindow = false;
+    @track requests;
 
     requestTypeField = REQUEST_TYPE_FIELD;
     startDateField = START_DATE_FIELD;
@@ -38,5 +39,16 @@ export default class VacationComponent extends LightningElement {
         });
         this.dispatchEvent(event);
         this.hideAddWindow();
+    }
+
+
+    connectedCallback() {
+        getRequestList()
+            .then(result => {
+                this.requests = result;
+            })
+            .catch(error => {
+                console.error(error);
+            });
     }
 }
