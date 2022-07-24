@@ -17,7 +17,8 @@
 
                 <!-- modal body start -->
                 <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
-                    <lightning-record-edit-form object-api-name="Vacation_request__c">
+                    <lightning-record-edit-form object-api-name="Vacation_request__c"
+                    onsuccess={handleSuccess}>
                         <lightning-input-field field-name={requestTypeField}></lightning-input-field>
                         <lightning-input-field field-name={startDateField}></lightning-input-field>
                         <lightning-input-field field-name={endDateField}></lightning-input-field>

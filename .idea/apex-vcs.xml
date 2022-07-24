@@ -4,5 +4,8 @@
     <index-record>
       <option name="path" value="/src/lwc/vacationComponent/vacationComponent.html" />
     </index-record>
+    <index-record>
+      <option name="path" value="/src/lwc/vacationComponent/vacationComponent.js" />
+    </index-record>
   </component>
 </project>

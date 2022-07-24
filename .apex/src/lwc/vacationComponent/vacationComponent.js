@@ -1,4 +1,5 @@
 import {LightningElement, track, api} from 'lwc';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 
 // import VACATION_OBJECT from '@salesforce/schema/Vacation_request__c';
 
@@ -8,10 +9,6 @@ import END_DATE_FIELD from '@salesforce/schema/Vacation_request__c.End_Date__c';
 import WORKING_DAYS_FIELD from '@salesforce/schema/Vacation_request__c.Working_Days__c';
 import STATUS_FIELD from '@salesforce/schema/Vacation_request__c.Status__c';
 import MANAGER_FIELD from '@salesforce/schema/Vacation_request__c.Manager__c';
-
-
-
-
 
 
 export default class VacationComponent extends LightningElement {
@@ -31,5 +28,15 @@ export default class VacationComponent extends LightningElement {
 
     hideAddWindow() {
         this.isShowAddWindow = false;
+    }
+
+    handleSuccess() {
+        const event = new ShowToastEvent({
+            title: "Success",
+            message: "Vacation request added successfully",
+            variant: 'success',
+        });
+        this.dispatchEvent(event);
+        this.hideAddWindow();
     }
 }
