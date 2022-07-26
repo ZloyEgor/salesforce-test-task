@@ -1,5 +1,6 @@
 import {LightningElement, track, api} from 'lwc';
-import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+import {ShowToastEvent} from 'lightning/platformShowToastEvent';
+import {deleteRecord, updateRecord} from 'lightning/uiRecordApi';
 import getRequestList from '@salesforce/apex/vacationComponentController.getRequestList';
 // import VACATION_OBJECT from '@salesforce/schema/Vacation_request__c
 
@@ -14,7 +15,10 @@ import MANAGER_FIELD from '@salesforce/schema/Vacation_request__c.Manager__c';
 export default class VacationComponent extends LightningElement {
 
     @track isShowAddWindow = false;
-    @track requests;
+    @track requests = [];
+
+    @api recordId;
+    @api objectApiName;
 
     requestTypeField = REQUEST_TYPE_FIELD;
     startDateField = START_DATE_FIELD;
@@ -32,6 +36,14 @@ export default class VacationComponent extends LightningElement {
     }
 
     handleSuccess() {
+
+        getRequestList().then(result => {
+            this.requests = result;
+        })
+            .catch(error => {
+                console.error(error);
+            });
+
         const event = new ShowToastEvent({
             title: "Success",
             message: "Vacation request added successfully",
@@ -41,11 +53,51 @@ export default class VacationComponent extends LightningElement {
         this.hideAddWindow();
     }
 
+    deleteRequest(event) {
+        let deletedId = event.target.value;
+        deleteRecord(deletedId)
+            .then(() => {
+                this.dispatchEvent(
+                    new ShowToastEvent({
+                        title: 'Success',
+                        message: 'Record deleted',
+                        variant: 'success'
+                    })
+                );
+                for (let request in this.requests) {
+                    if(this.requests[request].Id == deletedId) {
+                        this.requests.splice(request, 1);
+                        break;
+                    }
+                }
+            })
+            .catch(error => {
+                this.dispatchEvent(
+                    new ShowToastEvent({
+                        title: 'Error deleting record',
+                        message: error.body.message,
+                        variant: 'error'
+                    })
+                );
+            });
+
+    }
+
 
     connectedCallback() {
+        console.log('connected callback')
         getRequestList()
             .then(result => {
-                this.requests = result;
+                let newResult = result.map((item) =>
+                    Object.assign({}, item, {selected:false})
+                )
+                for (let request of newResult) {
+                    request.isNew = request.Status__c == "New";
+                    request.isSubmitted = request.Status__c == "Submitted";
+                    request.isApproved = request.Status__c == "Approved";
+                }
+                this.requests = newResult;
+                console.log(newResult);
             })
             .catch(error => {
                 console.error(error);

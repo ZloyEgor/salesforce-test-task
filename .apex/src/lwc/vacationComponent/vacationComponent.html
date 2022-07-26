@@ -1,11 +1,13 @@
 <template>
 
     <template if:true={isShowAddWindow}>
-        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
+        <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true"
+                 aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
             <div class="slds-modal__container">
                 <!-- modal header start -->
                 <header class="slds-modal__header">
-                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse" title="Close" onclick={hideAddWindow}>
+                    <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                            title="Close" onclick={hideAddWindow}>
                         <lightning-icon icon-name="utility:close"
                                         alternative-text="close"
                                         variant="inverse"
@@ -18,14 +20,11 @@
                 <!-- modal body start -->
                 <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
                     <lightning-record-edit-form object-api-name="Vacation_request__c"
-                    onsuccess={handleSuccess}>
+                                                onsuccess={handleSuccess}>
                         <lightning-input-field field-name={requestTypeField}></lightning-input-field>
                         <lightning-input-field field-name={startDateField}></lightning-input-field>
                         <lightning-input-field field-name={endDateField}></lightning-input-field>
                         <lightning-messages></lightning-messages>
-                        <lightning-output-field field-name={workingDaysField}></lightning-output-field>
-                        <lightning-output-field field-name={statusField}></lightning-output-field>
-                        <lightning-output-field field-name={managerField}></lightning-output-field>
                         <lightning-button
                                 class="slds-m-top_small"
                                 type="submit"
@@ -35,10 +34,10 @@
                     </lightning-record-edit-form>
                 </div>
 
-<!--                &lt;!&ndash; modal footer start&ndash;&gt;-->
-<!--                <footer class="slds-modal__footer">-->
-<!--                    <button class="slds-button slds-button_neutral" onclick={hideAddWindow}>Cancel</button>-->
-<!--                </footer>-->
+                <!--                &lt;!&ndash; modal footer start&ndash;&gt;-->
+                <!--                <footer class="slds-modal__footer">-->
+                <!--                    <button class="slds-button slds-button_neutral" onclick={hideAddWindow}>Cancel</button>-->
+                <!--                </footer>-->
 
             </div>
         </section>
@@ -77,9 +76,23 @@
                 </div>
             </div>
         </div>
-        <p>Requests?</p>
         <template for:each={requests} for:item="request">
-            <li key={request.Id}>{request.Start_Date__c} – {request.End_Date__c} ({request.Working_Days__c})</li>
+            <!--            <li key={request.Id}>{request.Start_Date__c} – {request.End_Date__c} ({request.Working_Days__c})</li>-->
+            <div class="slds-box slds-m-top_large" key={request.Id}>
+                <div class="slds-text-heading_medium slds-p-bottom_medium">{request.CreatedBy.FirstName} {request.CreatedBy.LastName}</div>
+                <div class="slds-text-body_regular">{request.Start_Date__c} – {request.End_Date__c}
+                    ({request.Working_Days__c} days)
+                </div>
+                <div class="slds-text-body_regular">{request.Request_Type__c}</div>
+                <div class="slds-text-body_regular">{request.Manager__c}</div>
+                <div class="slds-text-body_regular">{request.Status__c}</div>
+
+                <div class="slds-grid slds-grid--align-end">
+                    <button class="slds-button slds-button_success">Approve</button>
+                    <button class="slds-button slds-button_neutral">Submit</button>
+                    <button class="slds-button slds-button_text-destructive" value={request.Id} onclick={deleteRequest}>Remove</button>
+                </div>
+            </div>
         </template>
     </div>
 </template>
