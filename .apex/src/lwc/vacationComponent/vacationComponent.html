@@ -20,7 +20,7 @@
                 <!-- modal body start -->
                 <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
                     <lightning-record-edit-form object-api-name="Vacation_request__c"
-                                                onsuccess={handleSuccess}>
+                                                onsuccess={handleAdd}>
                         <lightning-input-field field-name={requestTypeField}></lightning-input-field>
                         <lightning-input-field field-name={startDateField}></lightning-input-field>
                         <lightning-input-field field-name={endDateField}></lightning-input-field>
@@ -33,11 +33,6 @@
                         </lightning-button>
                     </lightning-record-edit-form>
                 </div>
-
-                <!--                &lt;!&ndash; modal footer start&ndash;&gt;-->
-                <!--                <footer class="slds-modal__footer">-->
-                <!--                    <button class="slds-button slds-button_neutral" onclick={hideAddWindow}>Cancel</button>-->
-                <!--                </footer>-->
 
             </div>
         </section>
@@ -55,7 +50,7 @@
             <div class="slds-col_bump-right">
                 <div class="slds-form-element">
                     <div class="slds-form-element__control">
-                        <lightning-input type="checkbox" label="View only my"></lightning-input>
+                        <lightning-input type="checkbox" label="View only my" onchange={changeShowingRequestsMode}></lightning-input>
                     </div>
                 </div>
             </div>
@@ -70,22 +65,55 @@
             </div>
         </div>
         <template for:each={requests} for:item="request">
-            <!--            <li key={request.Id}>{request.Start_Date__c} – {request.End_Date__c} ({request.Working_Days__c})</li>-->
-            <div class="slds-box slds-m-top_large" key={request.Id}>
-                <div class="slds-text-heading_medium slds-p-bottom_medium">{request.CreatedBy.FirstName} {request.CreatedBy.LastName}</div>
-                <div class="slds-text-body_regular">{request.Start_Date__c} – {request.End_Date__c}
-                    ({request.Working_Days__c} days)
-                </div>
-                <div class="slds-text-body_regular">{request.Request_Type__c}</div>
-                <div class="slds-text-body_regular">{request.Manager__c}</div>
-                <div class="slds-text-body_regular">{request.Status__c}</div>
+            <template if:true={request.belongsToCurrentUser}>
+                <div class="slds-box slds-m-top_large" key={request.Id}>
+                    <div class="slds-text-heading_medium slds-p-bottom_medium">{request.CreatedBy.FirstName}
+                        {request.CreatedBy.LastName}
+                    </div>
+                    <div class="slds-text-body_regular">{request.Start_Date__c} – {request.End_Date__c}
+                        ({request.Working_Days__c} days)
+                    </div>
+                    <div class="slds-text-body_regular">{request.Request_Type__c}</div>
+                    <div class="slds-text-body_regular">{request.Manager__c}</div>
+                    <div class="slds-text-body_regular">{request.Status__c}</div>
 
-                <div class="slds-grid slds-grid--align-end">
-                    <button class="slds-button slds-button_success">Approve</button>
-                    <button class="slds-button slds-button_neutral" value={request.Id} onclick={submitRequest}>Submit</button>
-                    <button class="slds-button slds-button_text-destructive" value={request.Id} onclick={deleteRequest}>Remove</button>
+                    <div class="slds-grid slds-grid--align-end">
+                        <template if:true={request.canSubmitRequest}>
+                            <button class="slds-button slds-button_neutral" value={request.Id} onclick={submitRequest}>
+                                Submit
+                            </button>
+                        </template>
+                        <template if:true={request.canDeleteRequest}>
+                            <button class="slds-button slds-button_text-destructive" value={request.Id}
+                                    onclick={deleteRequest}>
+                                Remove
+                            </button>
+                        </template>
+                    </div>
                 </div>
-            </div>
+            </template>
+            <template if:false={request.belongsToCurrentUser}>
+                <template if:true={showOtherRequests}>
+                    <div class="slds-box slds-m-top_large" key={request.Id}>
+                        <div class="slds-text-heading_medium slds-p-bottom_medium">{request.CreatedBy.FirstName}
+                            {request.CreatedBy.LastName}
+                        </div>
+                        <div class="slds-text-body_regular">{request.Start_Date__c} – {request.End_Date__c}
+                            ({request.Working_Days__c} days)
+                        </div>
+                        <div class="slds-text-body_regular">{request.Request_Type__c}</div>
+                        <div class="slds-text-body_regular">{request.Manager__c}</div>
+                        <div class="slds-text-body_regular">{request.Status__c}</div>
+
+                        <div class="slds-grid slds-grid--align-end">
+                            <template if:true={request.canApproveRequest}>
+                                <button class="slds-button slds-button_success" value={request.Id} onclick={approveRequest}>Approve</button>
+                            </template>
+                        </div>
+                    </div>
+                </template>
+            </template>
+
         </template>
     </div>
 </template>

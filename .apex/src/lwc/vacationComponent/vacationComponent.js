@@ -2,19 +2,21 @@ import {LightningElement, track, api} from 'lwc';
 import {ShowToastEvent} from 'lightning/platformShowToastEvent';
 import {deleteRecord, updateRecord} from 'lightning/uiRecordApi';
 import getRequestList from '@salesforce/apex/vacationComponentController.getRequestList';
+import Id from '@salesforce/user/Id';
+import { refreshApex } from '@salesforce/apex';
 
 import ID_FIELD from '@salesforce/schema/Vacation_request__c.Id';
 import REQUEST_TYPE_FIELD from '@salesforce/schema/Vacation_request__c.Request_Type__c';
 import START_DATE_FIELD from '@salesforce/schema/Vacation_request__c.Start_Date__c';
 import END_DATE_FIELD from '@salesforce/schema/Vacation_request__c.End_Date__c';
-import WORKING_DAYS_FIELD from '@salesforce/schema/Vacation_request__c.Working_Days__c';
 import STATUS_FIELD from '@salesforce/schema/Vacation_request__c.Status__c';
-import MANAGER_FIELD from '@salesforce/schema/Vacation_request__c.Manager__c';
 
 
 export default class VacationComponent extends LightningElement {
 
     @track isShowAddWindow = false;
+    @track showOtherRequests = true;
+
     @track requests = [];
 
     @api recordId;
@@ -23,9 +25,8 @@ export default class VacationComponent extends LightningElement {
     requestTypeField = REQUEST_TYPE_FIELD;
     startDateField = START_DATE_FIELD;
     endDateField = END_DATE_FIELD;
-    workingDaysField = WORKING_DAYS_FIELD;
-    statusField = STATUS_FIELD;
-    managerField = MANAGER_FIELD;
+
+    userId = Id;
 
     showAddWindow() {
         this.isShowAddWindow = true;
@@ -35,15 +36,11 @@ export default class VacationComponent extends LightningElement {
         this.isShowAddWindow = false;
     }
 
-    handleSuccess() {
+    changeShowingRequestsMode() {
+        this.showOtherRequests = !this.showOtherRequests;
+    }
 
-        getRequestList().then(result => {
-            this.requests = result;
-        })
-            .catch(error => {
-                console.error(error);
-            });
-
+    handleAdd() {
         const event = new ShowToastEvent({
             title: "Success",
             message: "Vacation request added successfully",
@@ -51,10 +48,10 @@ export default class VacationComponent extends LightningElement {
         });
         this.dispatchEvent(event);
         this.hideAddWindow();
+        this.updateView();
     }
 
     submitRequest(event) {
-        console.log('submit invocation')
         let id = event.target.value;
         const fields = {}
         fields[ID_FIELD.fieldApiName] = id;
@@ -72,10 +69,41 @@ export default class VacationComponent extends LightningElement {
                     variant: 'success'
                 })
             );
+            this.updateView();
         }).catch(error => {
             this.dispatchEvent(
                 new ShowToastEvent({
-                    title: 'Error deleting record',
+                    title: 'Error submitting record',
+                    message: error.body.message,
+                    variant: 'error'
+                })
+            );
+        });
+    }
+
+    approveRequest(event) {
+        let id = event.target.value;
+        const fields = {}
+        fields[ID_FIELD.fieldApiName] = id;
+        fields[STATUS_FIELD.fieldApiName] = "Approved";
+        const recordInput = {
+            fields: fields
+        };
+
+        updateRecord(recordInput).then((record) => {
+            console.log(record);
+            this.dispatchEvent(
+                new ShowToastEvent({
+                    title: 'Success',
+                    message: 'Request approved',
+                    variant: 'success'
+                })
+            );
+            this.updateView();
+        }).catch(error => {
+            this.dispatchEvent(
+                new ShowToastEvent({
+                    title: 'Error approving record',
                     message: error.body.message,
                     variant: 'error'
                 })
@@ -93,12 +121,7 @@ export default class VacationComponent extends LightningElement {
                         variant: 'success'
                     })
                 );
-                for (let request in this.requests) {
-                    if(this.requests[request].Id == deletedId) {
-                        this.requests.splice(request, 1);
-                        break;
-                    }
-                }
+                this.updateView();
             })
             .catch(error => {
                 this.dispatchEvent(
@@ -114,7 +137,6 @@ export default class VacationComponent extends LightningElement {
 
 
     connectedCallback() {
-        console.log('connected callback')
         getRequestList()
             .then(result => {
                 let newResult = result.map((item) =>
@@ -124,6 +146,15 @@ export default class VacationComponent extends LightningElement {
                     request.isNew = request.Status__c == "New";
                     request.isSubmitted = request.Status__c == "Submitted";
                     request.isApproved = request.Status__c == "Approved";
+
+                    request.canDeleteRequest = request.CreatedById == this.userId && request.Status__c == "New";
+                    request.canSubmitRequest = request.CreatedById == this.userId && request.Status__c == "New";
+                    request.canApproveRequest = request.Manager__c == this.userId && request.Status__c == "Submitted";
+
+                    console.log("Created by: " + request.CreatedById);
+                    console.log("Manager: " + request.Manager__c);
+
+                    request.belongsToCurrentUser = request.CreatedById == this.userId;
                 }
                 this.requests = newResult;
                 console.log(newResult);
@@ -131,5 +162,10 @@ export default class VacationComponent extends LightningElement {
             .catch(error => {
                 console.error(error);
             });
+    }
+
+    updateView() {
+        //TODO: need to opimize
+        window.location.reload();
     }
 }
