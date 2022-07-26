@@ -2,8 +2,8 @@ import {LightningElement, track, api} from 'lwc';
 import {ShowToastEvent} from 'lightning/platformShowToastEvent';
 import {deleteRecord, updateRecord} from 'lightning/uiRecordApi';
 import getRequestList from '@salesforce/apex/vacationComponentController.getRequestList';
-import Id from '@salesforce/user/Id';
 
+import ID_FIELD from '@salesforce/schema/Vacation_request__c.Id';
 import REQUEST_TYPE_FIELD from '@salesforce/schema/Vacation_request__c.Request_Type__c';
 import START_DATE_FIELD from '@salesforce/schema/Vacation_request__c.Start_Date__c';
 import END_DATE_FIELD from '@salesforce/schema/Vacation_request__c.End_Date__c';
@@ -53,6 +53,35 @@ export default class VacationComponent extends LightningElement {
         this.hideAddWindow();
     }
 
+    submitRequest(event) {
+        console.log('submit invocation')
+        let id = event.target.value;
+        const fields = {}
+        fields[ID_FIELD.fieldApiName] = id;
+        fields[STATUS_FIELD.fieldApiName] = "Submitted";
+        const recordInput = {
+            fields: fields
+        };
+
+        updateRecord(recordInput).then((record) => {
+            console.log(record);
+            this.dispatchEvent(
+                new ShowToastEvent({
+                    title: 'Success',
+                    message: 'Request submitted',
+                    variant: 'success'
+                })
+            );
+        }).catch(error => {
+            this.dispatchEvent(
+                new ShowToastEvent({
+                    title: 'Error deleting record',
+                    message: error.body.message,
+                    variant: 'error'
+                })
+            );
+        });
+    }
     deleteRequest(event) {
         let deletedId = event.target.value;
         deleteRecord(deletedId)
