@@ -72,7 +72,7 @@
                         ({request.Working_Days__c} days)
                     </div>
                     <div class="slds-text-body_regular">{request.Request_Type__c}</div>
-                    <div class="slds-text-body_regular">{request.Manager__c}</div>
+                    <div class="slds-text-body_regular">{request.Manager__r.FirstName} {request.Manager__r.LastName}</div>
                     <div class="slds-text-body_regular">{request.Status__c}</div>
 
                     <div class="slds-grid slds-grid--align-end">
@@ -100,7 +100,7 @@
                             ({request.Working_Days__c} days)
                         </div>
                         <div class="slds-text-body_regular">{request.Request_Type__c}</div>
-                        <div class="slds-text-body_regular">{request.Manager__c}</div>
+                        <div class="slds-text-body_regular">{request.Manager__r.FirstName} {request.Manager__r.LastName}</div>
                         <div class="slds-text-body_regular">{request.Status__c}</div>
 
                         <div class="slds-grid slds-grid--align-end">

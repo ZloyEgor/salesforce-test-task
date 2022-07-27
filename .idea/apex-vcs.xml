@@ -7,10 +7,6 @@
     </index-record>
     <index-record>
       <option name="path" value="/src/lwc/vacationComponent/vacationComponent.html" />
-      <option name="type" value="MODIFIED" />
-    </index-record>
-    <index-record>
-      <option name="path" value="/src/classes/TestWorkingDaysCalculateTrigger.cls" />
     </index-record>
     <index-record>
       <option name="path" value="/src/lwc/vacationComponent/vacationComponent.js" />
