@@ -2,14 +2,14 @@
 <project version="4">
   <component name="ApexVcsIndex">
     <index-record>
+      <option name="path" value="/src/lwc/vacationComponent/vacationComponent.js" />
+    </index-record>
+    <index-record>
       <option name="path" value="/src/classes/TestManagerSetterTrigger.cls" />
       <option name="type" value="MODIFIED" />
     </index-record>
     <index-record>
-      <option name="path" value="/src/lwc/vacationComponent/vacationComponent.html" />
-    </index-record>
-    <index-record>
-      <option name="path" value="/src/lwc/vacationComponent/vacationComponent.js" />
+      <option name="path" value="/src/classes/vacationComponentController.cls" />
       <option name="type" value="MODIFIED" />
     </index-record>
   </component>

@@ -1,9 +1,8 @@
-import {LightningElement, track, api} from 'lwc';
+import {LightningElement, track, api, wire} from 'lwc';
 import {ShowToastEvent} from 'lightning/platformShowToastEvent';
 import {deleteRecord, updateRecord} from 'lightning/uiRecordApi';
 import getRequestList from '@salesforce/apex/vacationComponentController.getRequestList';
 import Id from '@salesforce/user/Id';
-import { refreshApex } from '@salesforce/apex';
 
 import ID_FIELD from '@salesforce/schema/Vacation_request__c.Id';
 import REQUEST_TYPE_FIELD from '@salesforce/schema/Vacation_request__c.Request_Type__c';
@@ -11,13 +10,12 @@ import START_DATE_FIELD from '@salesforce/schema/Vacation_request__c.Start_Date_
 import END_DATE_FIELD from '@salesforce/schema/Vacation_request__c.End_Date__c';
 import STATUS_FIELD from '@salesforce/schema/Vacation_request__c.Status__c';
 
-
 export default class VacationComponent extends LightningElement {
 
     @track isShowAddWindow = false;
     @track showOtherRequests = true;
 
-    @track requests = [];
+    requests = [];
 
     @api recordId;
     @api objectApiName;
@@ -61,7 +59,6 @@ export default class VacationComponent extends LightningElement {
         };
 
         updateRecord(recordInput).then((record) => {
-            console.log(record);
             this.dispatchEvent(
                 new ShowToastEvent({
                     title: 'Success',
@@ -91,7 +88,6 @@ export default class VacationComponent extends LightningElement {
         };
 
         updateRecord(recordInput).then((record) => {
-            console.log(record);
             this.dispatchEvent(
                 new ShowToastEvent({
                     title: 'Success',
@@ -110,6 +106,7 @@ export default class VacationComponent extends LightningElement {
             );
         });
     }
+
     deleteRequest(event) {
         let deletedId = event.target.value;
         deleteRecord(deletedId)
@@ -132,15 +129,27 @@ export default class VacationComponent extends LightningElement {
                     })
                 );
             });
-
     }
 
 
     connectedCallback() {
+        this.updateRequests();
+        // console.log('In callback:');
+        // console.log(this.requests);
+    }
+
+    updateView() {
+        //TODO: need to opimize
+        window.location.reload();
+        // this.updateRequests();
+        // eval("$A.get('e.force:refreshView').fire();");
+    }
+
+    updateRequests() {
         getRequestList()
             .then(result => {
                 let newResult = result.map((item) =>
-                    Object.assign({}, item, {selected:false})
+                    Object.assign({}, item, {selected: false})
                 )
                 for (let request of newResult) {
                     request.isNew = request.Status__c == "New";
@@ -151,21 +160,14 @@ export default class VacationComponent extends LightningElement {
                     request.canSubmitRequest = request.CreatedById == this.userId && request.Status__c == "New";
                     request.canApproveRequest = request.Manager__c == this.userId && request.Status__c == "Submitted";
 
-                    console.log("Created by: " + request.CreatedById);
-                    console.log("Manager: " + request.Manager__c);
-
                     request.belongsToCurrentUser = request.CreatedById == this.userId;
                 }
                 this.requests = newResult;
-                console.log(newResult);
+
+
             })
             .catch(error => {
                 console.error(error);
             });
-    }
-
-    updateView() {
-        //TODO: need to opimize
-        window.location.reload();
     }
 }
