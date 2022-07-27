@@ -2,8 +2,15 @@
 <project version="4">
   <component name="ApexVcsIndex">
     <index-record>
+      <option name="path" value="/src/classes/TestManagerSetterTrigger.cls" />
+      <option name="type" value="MODIFIED" />
+    </index-record>
+    <index-record>
       <option name="path" value="/src/lwc/vacationComponent/vacationComponent.html" />
       <option name="type" value="MODIFIED" />
+    </index-record>
+    <index-record>
+      <option name="path" value="/src/classes/TestWorkingDaysCalculateTrigger.cls" />
     </index-record>
     <index-record>
       <option name="path" value="/src/lwc/vacationComponent/vacationComponent.js" />

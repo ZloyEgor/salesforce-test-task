@@ -2,6 +2,11 @@
 <project version="4">
   <component name="ApexTimestampIndex">
     <index-record>
+      <option name="fileId" value="01p7Q00000Kp0NXQAZ" />
+      <option name="fileName" value="classes/TestWorkingDaysCalculateTrigger.cls" />
+      <option name="lastModifiedDate" value="1658908974000" />
+    </index-record>
+    <index-record>
       <option name="fileId" value="01p7Q00000Ket2QQAR" />
       <option name="fileName" value="classes/vacationComponentController.cls" />
       <option name="lastModifiedDate" value="1658665636000" />

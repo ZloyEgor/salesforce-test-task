@@ -42,8 +42,8 @@ private class TestManagerSetterTrigger {
 
 		System.runAs(user){
 			Vacation_request__c request = new Vacation_request__c(Request_Type__c = 'Vacation',
-			Start_Date__c = Date.newInstance(2022, 9, 1),
-			End_Date__c = Date.newInstance(2022, 9, 13));
+			Start_Date__c = Date.newInstance(2026, 9, 1),
+			End_Date__c = Date.newInstance(2026, 9, 13));
 
 			Test.startTest();
 			Database.SaveResult result = Database.insert(request, false);
