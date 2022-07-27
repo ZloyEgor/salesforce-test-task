@@ -3,6 +3,11 @@
   <component name="ApexVcsIndex">
     <index-record>
       <option name="path" value="/src/lwc/vacationComponent/vacationComponent.html" />
+      <option name="type" value="MODIFIED" />
+    </index-record>
+    <index-record>
+      <option name="path" value="/src/lwc/vacationComponent/vacationComponent.js" />
+      <option name="type" value="MODIFIED" />
     </index-record>
   </component>
 </project>
